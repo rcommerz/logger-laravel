@@ -39,7 +39,7 @@ jobs:
           RESPONSE=$(curl -X POST \
             -H "Content-Type: application/json" \
             -d "{\"repository\":{\"url\":\"${{ steps.repo-info.outputs.repo-url }}\"}}" \
-            "https://packagist.org/api/update-package?username=rcommerz&apiToken=${{ secrets.PACKAGIST_TOKEN }}" \
+            "https://packagist.org/api/update-package?username=islam_maruf&apiToken=${{ secrets.PACKAGIST_TOKEN }}" \
             -s -w "\n%{http_code}")
 
           HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
