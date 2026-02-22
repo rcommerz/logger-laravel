@@ -146,7 +146,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Trigger Packagist Update
-        if: ${{ secrets.PACKAGIST_TOKEN != '' }}
+        if: secrets.PACKAGIST_TOKEN != ''
         run: |
           echo "📦 Triggering Packagist update..."
 
@@ -170,7 +170,7 @@ jobs:
         continue-on-error: true
 
       - name: Notify Packagist (Fallback)
-        if: ${{ secrets.PACKAGIST_TOKEN == '' }}
+        if: secrets.PACKAGIST_TOKEN == ''
         run: |
           echo "📦 Package released!"
           echo "Version: ${{ needs.validate.outputs.version }}"
