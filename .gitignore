@@ -1,0 +1,38 @@
+# IDE & Editor
+.DS_Store
+.idea/
+# .vscode/  # Uncomment to ignore VSCode settings
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+
+# Dependencies
+vendor/
+composer.lock
+node_modules/
+
+# Testing
+.phpunit.result.cache
+.phpunit.cache
+coverage/
+.php_cs.cache
+.php-cs-fixer.cache
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build & Cache
+storage/
+bootstrap/cache/
+*.log
+*.cache
+
+# OS
+Thumbs.db
+*.swp
+*.swo
+*~
+.DS_Store?
+._*

@@ -1,0 +1,101 @@
+name: Update Packagist
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: "Package name (rcommerz/logger-laravel)"
+        required: false
+        default: "rcommerz/logger-laravel"
+        type: string
+
+  # Optional: Trigger on successful release
+  workflow_run:
+    workflows: ["Release Package"]
+    types: [completed]
+    branches: [main, master]
+
+jobs:
+  update-packagist:
+    runs-on: ubuntu-latest
+    name: Trigger Packagist Update
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get repository info
+        id: repo-info
+        run: |
+          REPO_URL="${{ github.server_url }}/${{ github.repository }}"
+          echo "repo-url=$REPO_URL" >> $GITHUB_OUTPUT
+          echo "Repository: $REPO_URL"
+
+      - name: Trigger Packagist Update
+        if: ${{ secrets.PACKAGIST_TOKEN != '' }}
+        run: |
+          echo "📦 Triggering Packagist update for ${{ github.event.inputs.package || 'rcommerz/logger-laravel' }}..."
+
+          RESPONSE=$(curl -X POST \
+            -H "Content-Type: application/json" \
+            -d "{\"repository\":{\"url\":\"${{ steps.repo-info.outputs.repo-url }}\"}}" \
+            "https://packagist.org/api/update-package?username=rcommerz&apiToken=${{ secrets.PACKAGIST_TOKEN }}" \
+            -s -w "\n%{http_code}")
+
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+
+          echo "Response Code: $HTTP_CODE"
+          echo "Response Body: $BODY"
+
+          if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "202" ]; then
+            echo "✅ Packagist update triggered successfully!"
+          else
+            echo "❌ Failed to trigger Packagist update"
+            exit 1
+          fi
+
+      - name: No Token Warning
+        if: ${{ secrets.PACKAGIST_TOKEN == '' }}
+        run: |
+          echo "❌ PACKAGIST_TOKEN secret not configured!"
+          echo ""
+          echo "To enable automatic Packagist updates:"
+          echo "1. Get API token from https://packagist.org/profile/"
+          echo "2. Add as PACKAGIST_TOKEN secret in GitHub repository"
+          echo "3. Settings → Secrets → Actions → New repository secret"
+          echo ""
+          echo "Manual update: https://packagist.org/packages/rcommerz/logger-laravel"
+          exit 1
+
+      - name: Verify Update
+        if: ${{ secrets.PACKAGIST_TOKEN != '' }}
+        run: |
+          echo "⏳ Waiting 10 seconds for Packagist to process..."
+          sleep 10
+
+          echo "🔍 Checking package on Packagist..."
+          PACKAGE_INFO=$(curl -s "https://packagist.org/packages/rcommerz/logger-laravel.json")
+
+          if echo "$PACKAGE_INFO" | grep -q "package"; then
+            echo "✅ Package found on Packagist"
+
+            # Extract latest version
+            LATEST=$(echo "$PACKAGE_INFO" | grep -oP '"version":\s*"\K[^"]+' | head -1)
+            if [ -n "$LATEST" ]; then
+              echo "Latest version: $LATEST"
+            fi
+          else
+            echo "⚠️  Package not found or not yet updated"
+          fi
+
+      - name: Success Summary
+        if: success()
+        run: |
+          echo "🎉 Packagist update completed!"
+          echo ""
+          echo "📦 Package: https://packagist.org/packages/rcommerz/logger-laravel"
+          echo "📊 Stats: https://packagist.org/packages/rcommerz/logger-laravel/stats"
+          echo ""
+          echo "To install:"
+          echo "composer require rcommerz/logger-laravel"

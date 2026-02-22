@@ -1,0 +1,115 @@
+name-template: 'v$RESOLVED_VERSION'
+tag-template: 'v$RESOLVED_VERSION'
+
+categories:
+  - title: '🚀 Features'
+    labels:
+      - 'feature'
+      - 'enhancement'
+  - title: '🐛 Bug Fixes'
+    labels:
+      - 'fix'
+      - 'bugfix'
+      - 'bug'
+  - title: '🧰 Maintenance'
+    labels:
+      - 'chore'
+      - 'maintenance'
+  - title: '📚 Documentation'
+    labels:
+      - 'documentation'
+      - 'docs'
+  - title: '🔒 Security'
+    labels:
+      - 'security'
+  - title: '⚡ Performance'
+    labels:
+      - 'performance'
+  - title: '🧪 Tests'
+    labels:
+      - 'test'
+      - 'tests'
+  - title: '🔧 Refactor'
+    labels:
+      - 'refactor'
+      - 'refactoring'
+
+change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
+change-title-escapes: '\<*_&'
+
+version-resolver:
+  major:
+    labels:
+      - 'major'
+      - 'breaking'
+  minor:
+    labels:
+      - 'minor'
+      - 'feature'
+      - 'enhancement'
+  patch:
+    labels:
+      - 'patch'
+      - 'fix'
+      - 'bugfix'
+      - 'bug'
+  default: patch
+
+template: |
+  ## What's Changed
+
+  $CHANGES
+
+  **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION
+
+  ## Installation
+
+  ```bash
+  composer require rcommerz/logger-laravel:^$RESOLVED_VERSION
+  ```
+
+  ## Documentation
+
+  See [README.md](https://github.com/$OWNER/$REPOSITORY/blob/v$RESOLVED_VERSION/README.md) for usage instructions.
+
+autolabeler:
+  - label: 'feature'
+    branch:
+      - '/^feat(ure)?[/-].+/'
+    title:
+      - '/^feat(\(.+\))?:/i'
+  - label: 'fix'
+    branch:
+      - '/^fix[/-].+/'
+    title:
+      - '/^fix(\(.+\))?:/i'
+  - label: 'chore'
+    branch:
+      - '/^chore[/-].+/'
+    title:
+      - '/^chore(\(.+\))?:/i'
+  - label: 'documentation'
+    branch:
+      - '/^docs?[/-].+/'
+    files:
+      - '*.md'
+    title:
+      - '/^docs?(\(.+\))?:/i'
+  - label: 'refactor'
+    branch:
+      - '/^refactor[/-].+/'
+    title:
+      - '/^refactor(\(.+\))?:/i'
+  - label: 'test'
+    branch:
+      - '/^test[/-].+/'
+    files:
+      - 'tests/**/*'
+    title:
+      - '/^test(\(.+\))?:/i'
+  - label: 'security'
+    title:
+      - '/^(security|sec)(\(.+\))?:/i'
+  - label: 'performance'
+    title:
+      - '/^(perf|performance)(\(.+\))?:/i'
