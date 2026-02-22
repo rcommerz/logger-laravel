@@ -146,14 +146,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Trigger Packagist Update
-        if: secrets.PACKAGIST_TOKEN != ''
+        if: env.PACKAGIST_TOKEN != ''
+        env:
+          PACKAGIST_TOKEN: ${{ secrets.PACKAGIST_TOKEN }}
         run: |
           echo "📦 Triggering Packagist update..."
 
           RESPONSE=$(curl -X POST \
             -H "Content-Type: application/json" \
             -d '{"repository":{"url":"https://github.com/rcommerz/logger-laravel"}}' \
-            "https://packagist.org/api/update-package?username=islam_maruf&apiToken=${{ secrets.PACKAGIST_TOKEN }}" \
+            "https://packagist.org/api/update-package?username=islam_maruf&apiToken=$PACKAGIST_TOKEN" \
             -s -w "\n%{http_code}")
 
           HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
@@ -170,7 +172,9 @@ jobs:
         continue-on-error: true
 
       - name: Notify Packagist (Fallback)
-        if: secrets.PACKAGIST_TOKEN == ''
+        if: env.PACKAGIST_TOKEN == ''
+        env:
+          PACKAGIST_TOKEN: ${{ secrets.PACKAGIST_TOKEN }}
         run: |
           echo "📦 Package released!"
           echo "Version: ${{ needs.validate.outputs.version }}"
